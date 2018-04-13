@@ -5,8 +5,11 @@ using System.Web;
 using System.Web.Mvc;
 using RentalManagement.Models;
 using RentalManagement.CustomFilters;
+using RentalManagement.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data;
+using System.Data.Entity;
 
 namespace RentalManagement.Controllers
 {
@@ -18,19 +21,17 @@ namespace RentalManagement.Controllers
         // GET: Accounting
         public ActionResult Index()
         {
-            ViewBag.Message = "Accounting page.";
+            var currentUserId = User.Identity.GetUserId();
+            // NEVER FORGET TO INCLUDE() TO LOAD UNDERLYING ENTITY 
+            var currentUser = db.Users.Include("Tenant").SingleOrDefault(s => s.Id == currentUserId);
+            // Gets the tenent entity for the current logged in user
+            var tenant = currentUser.Tenant;
 
-            var userID = User.Identity.GetUserId();
-
-            if (!string.IsNullOrEmpty(userID))
-            {
-                var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(ApplicationDbContext.Create()));
-                var currentUser = manager.FindById(User.Identity.GetUserId());
-            }
-
-            var myList = db.Tenants.Where(db => db.ID.Equals(userID));
-
-            return View();
+            //rental.ClientID = currentUser.Tenant;
+            // stores the assetID to the rental.asset
+            //rental.AssetID = ctx.Occupancies.Include("AssetID.ClientID").Where(s => s.ClientID.ID == currentUser.Tenant.ID).ToList().First().AssetID;
+            var test = db.Occupancies.Include("ClientID").Where(s => s.ClientID.ID == currentUser.Tenant.ID).ToList();
+            return View(test);
         }
         // GET: Accounting//PaymentDetails
         [AuthLog(Roles = "Tenant")]
@@ -50,7 +51,44 @@ namespace RentalManagement.Controllers
         {
             ViewBag.Message = "Order Details page.";
 
-            return View();
+            var currentUserId = User.Identity.GetUserId();
+            // NEVER FORGET TO INCLUDE() TO LOAD UNDERLYING ENTITY DATA
+            var currentUser = db.Users.Include("Tenant").SingleOrDefault(s => s.Id == currentUserId);
+            // Gets the tenent entity for the current logged in user
+            var tenant = currentUser.Tenant;
+
+            //rental.ClientID = currentUser.Tenant;
+            // stores the assetID to the rental.asset
+            //rental.AssetID = ctx.Occupancies.Include("AssetID.ClientID").Where(s => s.ClientID.ID == currentUser.Tenant.ID).ToList().First().AssetID;
+            var test = db.Occupancies.Include("ClientID").Where(s => s.ClientID.ID == currentUser.Tenant.ID).ToList();
+
+            return View(test);
+        }
+        // Post
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult OrderDetails([Bind(Include = "ID,AssetID,ClientID,NegoationedOn,Details")] Rental rental)
+        {
+            if (ModelState.IsValid)
+            {
+                if (User.IsInRole("Tenant"))
+                {
+                    var currentUserId = User.Identity.GetUserId();
+                    // NEVER FORGET TO INCLUDE() TO LOAD UNDERLYING ENTITY DATA
+                    var currentUser = db.Users.Include("Tenant").SingleOrDefault(s => s.Id == currentUserId);
+
+                    rental.ID = 1;
+                    rental.ClientID = currentUser.Tenant;
+                    rental.AssetID = null;
+                    rental.NegotiatedOn = DateTime.Now;
+                    rental.Details = "Test 123";
+
+                    db.Rentals.Add(rental);
+                    db.SaveChanges();
+                    return Redirect(Url.Content("~/"));
+                } 
+            }
+            return View(rental);
         }
     }
 }

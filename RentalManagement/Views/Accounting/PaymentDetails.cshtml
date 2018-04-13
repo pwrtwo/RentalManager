@@ -1,5 +1,5 @@
-﻿@using RentalManagement.Models;
-@model SomeViewModel
+@model IEnumerable<RentalManagement.Models.Occupancy>
+
 @{
     ViewBag.Title = "PaymentDetails";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,10 +8,16 @@
 <h2>@ViewBag.Title</h2>
 <h3>@ViewBag.Message</h3>
 
-<p>Payment Details here</p>
-
-<!-- credit card information page-->
-
+<p> You will be paying this amount below: </p>
+@foreach (var item in Model)
+{
+    @Html.Raw("Rent Amount: ")
+    <br />
+    @Html.Raw("Tax: ")
+    <br />
+    @Html.Raw("Total: ")
+}
+<p> Please confirm your purchase by giving mailing a void cheque and press proceed</p>
 <p><a class="btn btn-default" href="OrderDetails">Proceed &raquo;</a></p>
 
 <ul>

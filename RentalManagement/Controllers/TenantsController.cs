@@ -6,6 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using RentalManagement.Models;
 
 namespace RentalManagement.Controllers
@@ -46,7 +48,7 @@ namespace RentalManagement.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,PhoneNumber,Email,Details")] Tenant tenant)
+        public ActionResult Create([Bind(Include = "ID,Name,Email,Details")] Tenant tenant)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +81,7 @@ namespace RentalManagement.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,PhoneNumber,Email,Details")] Tenant tenant)
+        public ActionResult Edit([Bind(Include = "ID,Name,Email,Details")] Tenant tenant)
         {
             if (ModelState.IsValid)
             {
@@ -111,6 +113,13 @@ namespace RentalManagement.Controllers
         public ActionResult DeleteConfirmed(Guid id)
         {
             Tenant tenant = db.Tenants.Find(id);
+
+            var store = new UserStore<ApplicationUser>(db);
+            var manager = new UserManager<ApplicationUser, string>(store);
+            var user = manager.Users.SingleOrDefault(u => u.Email == tenant.Email);
+            manager.RemoveFromRole(user.Id, "Tenant");
+            var result = manager.Delete(user);
+
             db.Tenants.Remove(tenant);
             db.SaveChanges();
             return RedirectToAction("Index");
