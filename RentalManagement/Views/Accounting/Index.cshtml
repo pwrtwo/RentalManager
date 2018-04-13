@@ -8,12 +8,12 @@
 <h2>@ViewBag.Title</h2>
 <h3>@ViewBag.Message</h3>
 
-@foreach (var item in Model)
+@*@foreach (var item in Model)
 {
-    @Html.DisplayNameFor(model => model.StartDate) @Html.DisplayFor(modelItem => item.StartDate)
+    @Html.Raw("Start Date: ") //@Html.DisplayFor(modelItem => item.StartDate)
     <br />
-    @Html.DisplayNameFor(model => model.EndDate) @Html.DisplayFor(modelItem => item.EndDate)
-}
+    @Html.Raw("End Date: ") //@Html.DisplayFor(modelItem => item.EndDate)
+}*@
 
 <br />
 <br />

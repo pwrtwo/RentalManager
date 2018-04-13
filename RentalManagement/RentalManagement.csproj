@@ -211,6 +211,7 @@
     <Compile Include="Models\Applicant.cs" />
     <Compile Include="Models\MaintenanceRequest.cs" />
     <Compile Include="Models\Appliance.cs" />
+    <Compile Include="Models\SomeViewModel.cs" />
     <Compile Include="Models\Tenant.cs" />
     <Compile Include="Models\Asset.cs" />
     <Compile Include="Models\FullAddress.cs" />

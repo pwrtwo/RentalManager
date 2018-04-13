@@ -84,7 +84,6 @@ namespace RentalManagement.Models
         [Required]
         [Display(Name = "User Role")]
         public string UserRole { get; set; }
-
     }
 
     public class ResetPasswordViewModel
