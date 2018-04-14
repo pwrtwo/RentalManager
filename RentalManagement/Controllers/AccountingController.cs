@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Mvc;
 using RentalManagement.Models;
 using RentalManagement.CustomFilters;
-using RentalManagement.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data;
@@ -27,10 +26,15 @@ namespace RentalManagement.Controllers
             // Gets the tenent entity for the current logged in user
             var tenant = currentUser.Tenant;
 
-            //rental.ClientID = currentUser.Tenant;
+            // rental.ClientID = currentUser.Tenant;
             // stores the assetID to the rental.asset
-            //rental.AssetID = ctx.Occupancies.Include("AssetID.ClientID").Where(s => s.ClientID.ID == currentUser.Tenant.ID).ToList().First().AssetID;
-            var test = db.Occupancies.Include("ClientID").Include("AssetID").Include(e => e.AssetID.Address).Where(s => s.ClientID.ID == currentUser.Tenant.ID).ToList();
+            // rental.AssetID = ctx.Occupancies.Include("AssetID.ClientID").Where(s => s.ClientID.ID == currentUser.Tenant.ID).ToList().First().AssetID;
+            var test = db.Occupancies
+                        .Include("ClientID")
+                        .Include("AssetID")
+                        .Include(e => e.AssetID.Address)
+                        .Where(s => s.ClientID.ID == currentUser.Tenant.ID).ToList();
+
             return View(test);
         }
         // GET: Accounting//PaymentDetails
@@ -75,7 +79,11 @@ namespace RentalManagement.Controllers
                 {
                     var currentUserId = User.Identity.GetUserId();  
                     // NEVER FORGET TO INCLUDE() TO LOAD UNDERLYING ENTITY DATA
-                    var currentUser = db.Users.Include("Tenant").Include(e => e.Tenant.RequestedAssets).SingleOrDefault(s => s.Id == currentUserId);
+                    var currentUser = db.Users
+                                        .Include("Tenant")
+                                        .Include(e => e.Tenant.RequestedAssets)
+                                        .SingleOrDefault(s => s.Id == currentUserId);
+
                     var getAsset = currentUser.Tenant.RequestedAssets;
 
                     rental.AssetID = getAsset;

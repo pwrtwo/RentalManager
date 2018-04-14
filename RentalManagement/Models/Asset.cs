@@ -23,6 +23,7 @@ namespace RentalManagement.Models
         public AssetType Type { get; set; }
         public FullAddress Address { get; set; }
         public int AskingRent { get; set; }
+        
         public virtual ICollection<Occupancy> OccupancyHistory { get; set; }
         public virtual ICollection<Rental> RentalHistory { get; set; }
         public virtual ICollection<Appliance> Appliances { get; set; }
